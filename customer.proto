@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package customer;
+
+service CustomerService {
+  rpc GetCustomer (CustomerId) returns (Customer);
+  rpc AddCustomer (Customer) returns (CustomerResponse);
+  rpc UpdateCustomer (Customer) returns (CustomerResponse);
+  rpc DeleteCustomer (CustomerId) returns (CustomerResponse);
+  rpc ListCustomers (Empty) returns (CustomerList);
+}
+
+message Empty {}
+
+message Customer {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+}
+
+message CustomerId {
+  string id = 1;
+}
+
+message CustomerResponse {
+  string message = 1;
+}
+
+
+// array of customer
+message CustomerList {
+  repeated Customer customers = 1;  
+}

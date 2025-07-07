@@ -1,0 +1,169 @@
+The customer.proto file is a Protocol Buffers (protobuf) file. It defines the service interface and message schemas for gRPC communication. Think of it as an API contract
+between client and server,but in a strongly-typed, language-neutral format.
+
+ ------customer.proto Explained Line-by-Line:-----
+
+ 1. syntax = "proto3";
+
+This tells the compiler to use proto3 syntax (the latest version of Protocol Buffers).
+Proto3 supports features like default values, optional fields, and JSON interoperability
+
+
+2. package customer;
+
+Declares a package namespace.
+Useful when generating code in different languages (e.g., customer.CustomerService in Node.js).
+
+
+3. Service Definition:
+
+service CustomerService {
+  rpc GetCustomer (CustomerId) returns (Customer);
+  rpc AddCustomer (Customer) returns (CustomerResponse);
+  rpc UpdateCustomer (Customer) returns (CustomerResponse);
+  rpc DeleteCustomer (CustomerId) returns (CustomerResponse);
+}
+
+Defines a gRPC service named CustomerService.
+
+Each line is a remote procedure call (rpc) that the server provides.
+
+
+| Method           | Input        | Output             | Description                  |
+| ---------------- | ------------ | ------------------ | ---------------------------- |
+| `GetCustomer`    | `CustomerId` | `Customer`         | Fetches a customer by ID     |
+| `AddCustomer`    | `Customer`   | `CustomerResponse` | Adds a new customer          |
+| `UpdateCustomer` | `Customer`   | `CustomerResponse` | Updates an existing customer |
+| `DeleteCustomer` | `CustomerId` | `CustomerResponse` | Deletes a customer by ID     |
+
+
+4. 📬 Message Definitions:
+
+1. message Customer {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+}
+
+Represents a customer entity.
+
+Fields:
+
+id: Unique identifier.
+
+name: Full name.
+
+email: Email address.
+
+Each field has a unique tag number (e.g., 1, 2, 3), which
+ is used in the binary encoding.
+
+
+2. CustomerId
+
+message CustomerId {
+  string id = 1;
+}
+
+A message to wrap the customer ID.
+
+Used for identifying which customer to retrieve or delete.
+
+
+3. CustomerResponse
+
+message CustomerResponse {
+  string message = 1;
+}
+
+
+A generic response message with a status message like "Customer added" or "Customer deleted".
+
+
+============================================================================================================================================================
+
+ What does the number 1 mean?
+ 
+It's a unique identifier for the field within the message.
+
+Protobuf uses this number — not the field name — in the underlying binary format to serialize and deserialize messages.
+
+So instead of storing "id", it stores the number 1 with the corresponding value to save space and improve speed.
+
+
+📐 Tag Number Ranges
+1–15: Uses 1 byte for encoding — best for frequently used fields.
+
+16–2047: Uses 2 bytes — still efficient.
+
+Avoid numbers above 2048 unless needed.
+
+
+message Customer {
+  string id = 1;       // tag 1
+  string name = 2;     // tag 2
+  string email = 3;    // tag 3
+}
+When a Customer is serialized, the encoded message might look like this in binary (simplified):
+
+<field-tag=1><value=id>
+<field-tag=2><value=name>
+<field-tag=3><value=email>
+
+
+✅ = 1
+This is the tag number. It means:
+
+When this message is sent over the network, Protobuf uses the number 1 to represent this field, not the field name id.
+
+It keeps the message smaller and faster than sending field names.
+
+
+============================================================================================================================================================
+🧪 Why is this number important?
+
+Imagine the server sends this data:
+
+
+{
+  "id": "123"
+}
+
+
+Internally (binary protobuf format), it might be encoded like:
+
+tag=1 + value="123"
+
+If you changed it to: string id = 2;
+
+Then the encoded message becomes:
+tag=2 + value="123"
+
+ The server and client would fail to understand each other unless both are updated to use = 2.
+
+============================================================================================================================================================
+
+
+
+
+
+summary:
+
+This .proto file is used by both the gRPC server (to implement the service) and the client (to make typed calls). It enables:
+
+Code generation in various languages.
+
+Typed interfaces.
+
+Efficient binary serialization over the network.
+
+
+
+
+============================================================================================================================================================
+
+
+// array of customer
+// message CustomerList {
+//  repeated Customer customers = 1;  
+// }
