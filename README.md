@@ -51,15 +51,10 @@ POST http://localhost:3000/customer
 
 PUT http://localhost:3000/customer
 
-```
-{
+```{
   "id": "123",
   "name": "Johnny Updated",
   "email": "johnny@example.com"
-}
+}```
 
-```
-
-```
-DELETE http://localhost:3000/customer/123
-```
+```DELETE http://localhost:3000/customer/123```
